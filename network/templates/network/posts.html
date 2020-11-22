@@ -1,0 +1,87 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+
+    <div class="top-matter">
+        {% block top-matter %}
+        {% endblock %}
+    </div>
+
+    <div class="feed">
+        {% for post in posts %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <a href="{% url 'profile' post.creator.username %}">
+                    <h5 class="card-title">{{ post.creator }}</h5>
+                </a>
+                <h6 class="card-subtitle mb-2 text-muted">{{ post.timestamp }}</h6>
+                {% if user.is_authenticated  and user == post.creator %}
+                    <button type="button" class="btn btn-link edit-link" id="edit-link-{{ post.id }}" data-post="{{ post.id }}">Edit</button>
+                    <div class="edit-form" id="edit-form-{{ post.id }}">
+                        <textarea class="form-control edit-textarea" id="edit-textarea-{{ post.id }}" data-post="{{ post.id }}">{{ post.content }}</textarea>
+                        <button class="btn btn-primary btn-sm my-1 edit-save-btn" data-post="{{ post.id }}">Save</button>
+                    </div>
+                {% endif %}
+                <p class="card-text" id="post-content-{{ post.id }}">{{ post.content }}</p>
+                <p class="card-text text-muted">
+                    <svg width="1em" 
+                         height="1em"
+                         viewBox="0 0 16 16"
+                         xmlns="http://www.w3.org/2000/svg"
+                         id="{{ post.id }}"
+                         data-post="{{ post.id }}"
+                         class="bi bi-suit-heart-fill"
+                         fill="
+                            {% if user in post.likes.all %}
+                            red
+                            {% else %}
+                            black
+                            {% endif %}">
+                        <path d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1z"/>
+                    </svg>
+                    <span id="like-count-{{ post.id }}">{{ post.likes.all|length }}</span>
+                </p>
+            </div>
+        </div>
+        {% empty %}
+        <p>No posts.</p>
+        {% endfor %}
+    </div>
+
+    {% if posts.paginator.num_pages > 1 %}
+        <nav aria-label="Posts pages">
+            <ul class="pagination">
+
+                {% if posts.has_previous %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.previous_page_number }}">Previous</a>
+                </li>
+                {% endif %}
+
+                {% for page in posts.paginator.page_range %}
+                {% if page == posts.number %}
+                <li class="page-item active" aria-current="page">
+                    <a class="page-link" href="?page={{ page }}">{{ page }} <span class="sr-only">(current)</span></a>
+                </li>
+                {% else %}
+                <li class="page-item"><a class="page-link" href="?page={{ page }}">{{ page }}</a></li>
+                {% endif %}
+                {% endfor %}
+
+                {% if posts.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ posts.next_page_number }}">Next</a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+{% endblock %}
+
+
+{% block script %}
+    {% if user.is_authenticated %}
+        <script src="{% static 'network/posts.js' %}"></script>
+    {% endif %}
+{% endblock %}

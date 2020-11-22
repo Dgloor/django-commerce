@@ -1,0 +1,47 @@
+.body {
+    margin: 15px;
+}
+
+hr {
+    border: none;
+    height: 3px;
+    background-color: rgba(0, 0, 0, .125);
+}
+
+.edit-form {
+    display: none;
+}
+
+.edit-textarea {
+    padding: 5px;
+}
+
+.bi {
+    cursor: pointer;
+}
+
+.btn-link {
+    padding: 0;
+    border: none;
+}
+
+#following-btn, #follow-btn {
+    width: 100px;
+}
+
+#following-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+}
+
+#following-btn .unfollow {
+    display: none;
+}
+
+#following-btn:hover .following {
+    display: none;
+}
+
+#following-btn:hover .unfollow {
+    display: inline;
+}

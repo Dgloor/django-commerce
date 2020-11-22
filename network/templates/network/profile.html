@@ -1,0 +1,24 @@
+{% extends "network/posts.html" %}
+
+{% block top-matter %}
+    <h1>{{ profile.username }}</h1>
+    <div class="mb-2">
+        <span class="h4">{{ profile.following.all|length }}</span>
+        <span class="text-muted mr-3">Following</span>
+        <span class="h4">{{ profile.followers.all|length }}</span>
+        <span class="text-muted">Followers</span>
+    </div>
+
+    {% if profile != user %}
+            {% if user in profile.followers.all %}
+                <a href="{% url 'toggle_following' profile.username %}" role="button" class="btn btn-primary mb-2" id="following-btn">
+                    <span class="following">Following</span>
+                    <span class="unfollow">Unfollow</span>
+                </a>
+            {% else %}
+                {% if user.is_authenticated %}
+                <a href="{% url 'toggle_following' profile.username %}" role="button" class="btn btn-outline-primary mb-2" id="follow-btn">Follow</a>
+                {% endif %}
+            {% endif %}
+    {% endif %}
+{% endblock %}
