@@ -1,0 +1,7 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>New Listing</h2>
+    {% load crispy_forms_tags %}
+    {% crispy listing_form listing_form.helper %}
+{% endblock %}

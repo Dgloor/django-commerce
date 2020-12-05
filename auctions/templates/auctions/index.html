@@ -1,0 +1,34 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>
+        {% if page == "home" %}
+            Active Listings
+        {% elif page == "category" %}
+            {{ category }}
+        {% elif page == "watchlist" %}
+            Watchlist
+        {% endif %}
+    </h2>
+
+    <div class="card-columns">
+        {% for listing in listings %}
+            <div class="card">
+                {% if listing.image %}
+                    <img src="{{ listing.image }}" class="card-img-top" alt="{{ listing.title }}">
+                {% endif %}
+
+                <div class="card-body">
+                    <h4>
+                        ${% firstof listing.highest_bid_price|floatformat:"2" listing.price %}
+                    </h4>
+                    <a href="{% url 'listing' listing.id %}" class="stretched-link"><h5 class="card-title">{{ listing.title }}</h5></a>
+                    <p class="card-text">{{ listing.description }}</p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No items in your watchlist.</p>
+        {% endfor %}
+    </div>
+
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div>
+        <h2>
+            {% if not listing.active %}
+            CLOSED - 
+            {% endif %}
+            {{ listing.title }}
+        </h2>
+
+        <div class="listing-section">
+            {% if in_watchlist %}
+                <a href="{% url 'toggle_watchlist' listing.id %}"><span class="badge badge-primary">Watchlisted</span></a>
+            {% elif user.is_authenticated and not in_watchlist %}
+                <a href="{% url 'toggle_watchlist' listing.id %}"><span class="badge badge-secondary">Add to Watchlist</span></a>
+            {% endif %}
+        </div>
+
+        {% if listing.image %}
+            <img class="my-3" src="{{ listing.image }}" alt="{{ listing.title }} width="300" height="300">
+        {% endif %}
+
+        <p>{{ listing.description }}</p>
+
+        <h2 class="my-3">${% firstof listing.highest_bid_price|floatformat:"2" listing.price %}</h2> 
+    </div>
+
+    <div class="mt-3">
+        {% if listing.active %}
+            {% if user.is_authenticated %}
+                <p class="text-muted">
+                    {% if listing.num_bids == 0 %}
+                        No bids so far.
+                    {% elif listing.num_bids == 1 %}
+                        1 bid so far.
+                    {% else %}
+                        {{ listing.num_bids }} bids so far.
+                    {% endif %}
+                </p>
+                <form action="{% url 'add_bid' listing.id %}" method="post">
+                    {% load crispy_forms_tags %}
+                    {% crispy bid_form bid_form.helper %}
+                </form>
+            {% else %}
+                <p>Log in to place a bid.</p>
+            {% endif %}
+        {% else %}
+            <h3 class="text-danger">This auction has been closed.</h3>
+            {% if listing.winner == user %}
+                <h3 class="text-success">You are the winner! 🎉</h3>
+            {% endif %}
+        {% endif %}
+    </div>
+
+    {% if listing.active and user.is_authenticated and listing.creator == user %}
+        <div class="mt-4">
+                <h3 class="text-danger">Close the Auction</h3>
+                <p>This will make the highest bidder the winner of the action, and make the listing inactive.</p>
+                <a href="{% url 'close_auction' listing.id %}"><button type="button" class="mt-2 btn btn-danger">Close Auction</button></a>
+        </div>
+    {% endif %}
+
+    <div class="mt-4">
+        <h3 class="text-primary">Details</h3>
+        <ul>
+            <li><strong>Category: </strong>{{ listing.category|capfirst }}</li>
+            <li><strong>Listed by: </strong>{{ listing.creator.username }}</li>
+            <li><strong>Listed on: </strong>{{ listing.timestamp|date:"F j Y, h:i a" }}</li>
+        </ul>
+    </div>
+
+    <div class="mt-4">
+        <h3 class="text-primary">Comments</h3>
+        {% for comment in comments %}
+            <div class="comment">
+                <h5>{{ comment.commenter }}</h5>
+                <p class="text-muted"><small>{{ comment.timestamp }}</small></p>
+                <p>{{ comment.content }}</p>
+            </div>
+        {% empty %}
+            <p>No comments yet.</p>
+        {% endfor %}
+    </div>
+
+    <div class="mt-4">
+        <h3 class="text-primary">Add a Comment</h3>
+        {% if user.is_authenticated %}
+            <form action="{% url 'add_comment' listing.id %}" method="post">
+                {% load crispy_forms_tags %}
+                {% crispy comment_form comment_form.helper %}
+            </form>
+        {% else %}
+            <p>Log in to post a comment.</p>
+        {% endif %}
+    </div>
+
+{% endblock %}

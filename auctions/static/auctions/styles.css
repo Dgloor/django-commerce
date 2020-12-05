@@ -1,0 +1,21 @@
+body {
+    padding: 10px;
+}
+
+form {
+    padding: 0;
+}
+
+.card img {
+    width: auto;
+    height: 15vw;
+    padding: 20px 20px 0 20px;
+}
+
+.comment {
+    margin-bottom: 20px;
+}
+
+.comment h5, p {
+    margin: 0;
+}
